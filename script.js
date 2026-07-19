@@ -16,14 +16,23 @@ const gameBoard = (() => {
     return { row, column };
   };
 
-  const addPlay = (value, position) => {
-    const { row, column } = mapRowAndColumn(position);
+  const checkBothDiagonals = (row, column) => {
+    let checkLeftDiagonal = false;
+    let checkRightDiagonal = false;
 
-    if (board[row][column] !== " ") {
-      return -1;
+    if (row === column) {
+      checkLeftDiagonal = [0, 1, 2].every(
+        (i) => board[i][i] !== " " && board[i][i] === board[0][0],
+      );
     }
 
-    board[row][column] = value;
+    if (row + column === 2) {
+      checkRightDiagonal = [0, 1, 2].every(
+        (i) => board[i][2 - i] !== " " && board[0][2] === board[i][2 - i],
+      );
+    }
+
+    return checkLeftDiagonal || checkRightDiagonal;
   };
 
   const checkWinner = (position) => {
@@ -39,17 +48,25 @@ const gameBoard = (() => {
     const checkColumn = [0, 1, 2].every(
       (i) => board[i][column] !== " " && board[i][column] === board[0][column],
     );
+    if (checkColumn) return true;
 
     // Check diagonal (only if it applies)
-    const checkDiagonal = checkDiagonal(row, column);
+    const checkDiagonals = checkBothDiagonals(row, column);
+    if (checkDiagonals) return true;
+
+    return false;
   };
 
-  const checkDiagonal = (row, column) => {
-    if (row === column) {
-      // Check left diagonal
-    } else if (row + column === 2) {
-      // Check right diagonal
+  const checkEndOfGame = () => {};
+
+  const addPlay = (value, position) => {
+    const { row, column } = mapRowAndColumn(position);
+
+    if (board[row][column] !== " ") {
+      return -1;
     }
+
+    board[row][column] = value;
   };
 
   const printBoard = () => {
@@ -93,12 +110,14 @@ const ticTacToe = (() => {
   const player1 = createPlayer("Player 1", "X");
   const player2 = createPlayer("Player 2", "O");
 
+  let activeTurn = 1;
   let activePlayer = player1;
 
   const switchTurn = () => {
     activePlayer = activePlayer === player1 ? player2 : player1;
   };
 
+  const increaseTurn = () => activeTurn++;
   const getActivePlayer = () => activePlayer;
 
   const printRound = () => {
@@ -107,25 +126,30 @@ const ticTacToe = (() => {
     gameBoard.printBoard();
   };
 
-  const restartGame = () => {};
-
   const playRound = (position) => {
     const activeMark = getActivePlayer().getMark();
+    const activeName = getActivePlayer().getName();
 
     if (gameBoard.addPlay(activeMark, position) === -1) {
       console.log("Invalid move, please enter another spot...");
       return;
     }
 
-    console.log(
-      `${getActivePlayer().getName()} placed in the ${position} position.`,
-    );
-
-    gameBoard.checkWinner();
-
-    switchTurn();
+    console.log(`${activeName} placed in the ${position} position.`);
 
     printRound();
+
+    if (gameBoard.checkWinner(position)) {
+      console.log(`${activeName} won!`);
+      return;
+    }
+
+    if (increaseTurn() >= 9) {
+      console.log("It's a tie!");
+      return;
+    }
+
+    switchTurn();
   };
 
   printRound();
@@ -133,7 +157,12 @@ const ticTacToe = (() => {
   return { playRound };
 })();
 
-ticTacToe.playRound(1);
+ticTacToe.playRound(5);
 ticTacToe.playRound(1);
 ticTacToe.playRound(2);
-ticTacToe.playRound(1);
+ticTacToe.playRound(8);
+ticTacToe.playRound(3);
+ticTacToe.playRound(7);
+ticTacToe.playRound(4);
+ticTacToe.playRound(6);
+ticTacToe.playRound(9);
