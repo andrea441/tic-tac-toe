@@ -11,6 +11,14 @@ const gameBoard = (() => {
 
   const getBoard = () => board;
 
+  const restartBoard = () => {
+    board = [
+      [" ", " ", " "],
+      [" ", " ", " "],
+      [" ", " ", " "],
+    ];
+  };
+
   const mapRowAndColumn = (position) => {
     const row = Math.floor((position - 1) / 3);
     const column = (position - 1) % 3;
@@ -59,39 +67,19 @@ const gameBoard = (() => {
     return false;
   };
 
-  const checkEndOfGame = () => {};
-
   const addPlay = (value, position) => {
     const { row, column } = mapRowAndColumn(position);
 
     if (board[row][column] !== " ") {
-      return -1;
+      return false;
     }
 
     board[row][column] = value;
+
+    return true;
   };
 
-  const printBoard = () => {
-    let counter = 1;
-
-    for (let i = 0; i < board.length; i++) {
-      let row = "";
-
-      for (let j = 0; j < board[i].length; j++) {
-        if (board[i][j] === " ") {
-          row += counter + " ";
-        } else {
-          row += board[i][j] + " ";
-        }
-
-        counter += 1;
-      }
-
-      console.log(row);
-    }
-  };
-
-  return { getBoard, addPlay, printBoard, checkWinner };
+  return { getBoard, restartBoard, addPlay, checkWinner };
 })();
 
 function createPlayer(name, mark) {
@@ -115,6 +103,12 @@ const ticTacToe = (() => {
   let activeTurn = 1;
   let activePlayer = player1;
 
+  const restartGame = () => {
+    activePlayer = player1;
+    activeTurn = 1;
+    gameBoard.restartBoard();
+  };
+
   const switchTurn = () => {
     activePlayer = activePlayer === player1 ? player2 : player1;
   };
@@ -123,44 +117,38 @@ const ticTacToe = (() => {
 
   const getActivePlayer = () => activePlayer;
 
-  const printRound = () => {
-    console.log(`Is ${getActivePlayer().getName()} turn's!`);
-
-    gameBoard.printBoard();
-  };
-
   const playRound = (position) => {
     const activeMark = getActivePlayer().getMark();
     const activeName = getActivePlayer().getName();
 
-    if (gameBoard.addPlay(activeMark, position) === -1) {
-      console.log("Invalid move, please enter another spot...");
-      return;
-    }
+    const validPlay = gameBoard.addPlay(activeMark, position);
+    if (!validPlay) return "Spot taken! Choose another one.";
 
-    console.log(`${activeName} placed in the ${position} position.`);
+    const hasWinner = gameBoard.checkWinner(position);
+    if (hasWinner) return `${activeName} won the game!`;
 
-    printRound();
-
-    if (gameBoard.checkWinner(position)) {
-      console.log(`${activeName} won!`);
-      return;
-    }
-
-    if (increaseTurn() >= 9) {
-      console.log("It's a tie!");
-      return;
-    }
+    if (increaseTurn() >= 9) return "It's a tie, nobody won this time.";
 
     switchTurn();
+
+    return { status: "", message: "" };
   };
 
-  return { playRound };
+  return { playRound, restartGame, getActivePlayer };
 })();
 
 const displayController = (() => {
   const boardElement = document.querySelector(".board");
-  const restartButton = document.querySelector(".restart-game");
+  const restartButton = document.querySelector(".restart-game-btn");
+  const openDialogNames = document.querySelector(".change-names-btn");
+  const dialogNames = document.querySelector("#modal-change-names");
+
+  const displayActivePlayer = () => {
+    const activePlayerElement = document.querySelector(".current-player");
+
+    activePlayer = ticTacToe.getActivePlayer();
+    activePlayerElement.textContent = `Is ${activePlayer.getName()} turn's!`;
+  };
 
   const renderBoard = () => {
     const board = gameBoard.getBoard();
@@ -179,6 +167,8 @@ const displayController = (() => {
       if (value === "O") cell.classList.add("cell-o");
 
       cell.textContent = value;
+
+      displayActivePlayer();
     });
   };
 
@@ -186,9 +176,13 @@ const displayController = (() => {
     if (!e.target.classList.contains("cell")) return;
 
     const position = e.target.dataset.id;
-    console.log(position);
+    const moveMessage = ticTacToe.playRound(position);
 
-    ticTacToe.playRound(position);
+    renderBoard();
+  };
+
+  const handleReset = (e) => {
+    ticTacToe.restartGame();
 
     renderBoard();
   };
@@ -196,6 +190,8 @@ const displayController = (() => {
   renderBoard();
 
   boardElement.addEventListener("click", handleClick);
-
-  return { renderBoard };
+  restartButton.addEventListener("click", handleReset);
+  openDialogNames.addEventListener("click", () => {
+    dialogNames.showModal();
+  });
 })();

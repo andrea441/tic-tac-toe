@@ -54,12 +54,23 @@ button svg {
   height: 2rem;
 }
 
+.header-buttons {
+  display: flex;
+  gap: 1em;
+}
+
 main {
   flex: 1;
   padding: 3em;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 1em;
+}
+
+.current-player {
+  font-weight: bold;
+  font-size: 1.5em;
 }
 
 .board {
@@ -90,4 +101,18 @@ main {
 
 .cell.cell-o {
   color: var(--accent-color);
+}
+
+dialog {
+  margin: auto;
+  padding: 2em;
+}
+
+dialog::backdrop {
+  background-color: black;
+  opacity: 0.75;
+}
+
+dialog button {
+  background-color: var(--primary-color);
 }
