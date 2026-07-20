@@ -9,6 +9,8 @@ const gameBoard = (() => {
     }
   }
 
+  const getBoard = () => board;
+
   const mapRowAndColumn = (position) => {
     const row = Math.floor((position - 1) / 3);
     const column = (position - 1) % 3;
@@ -89,7 +91,7 @@ const gameBoard = (() => {
     }
   };
 
-  return { addPlay, printBoard, checkWinner };
+  return { getBoard, addPlay, printBoard, checkWinner };
 })();
 
 function createPlayer(name, mark) {
@@ -118,6 +120,7 @@ const ticTacToe = (() => {
   };
 
   const increaseTurn = () => activeTurn++;
+
   const getActivePlayer = () => activePlayer;
 
   const printRound = () => {
@@ -152,17 +155,47 @@ const ticTacToe = (() => {
     switchTurn();
   };
 
-  printRound();
-
   return { playRound };
 })();
 
-ticTacToe.playRound(5);
-ticTacToe.playRound(1);
-ticTacToe.playRound(2);
-ticTacToe.playRound(8);
-ticTacToe.playRound(3);
-ticTacToe.playRound(7);
-ticTacToe.playRound(4);
-ticTacToe.playRound(6);
-ticTacToe.playRound(9);
+const displayController = (() => {
+  const boardElement = document.querySelector(".board");
+  const restartButton = document.querySelector(".restart-game");
+
+  const renderBoard = () => {
+    const board = gameBoard.getBoard();
+    const cellsElement = document.querySelectorAll(".cell");
+
+    cellsElement.forEach((cell) => {
+      const id = cell.dataset.id;
+      const row = Math.floor((id - 1) / 3);
+      const column = (id - 1) % 3;
+      const value = board[row][column];
+
+      // Adding classes for CSS styling the cells
+      cell.classList.remove("cell-x", "cell-o");
+
+      if (value === "X") cell.classList.add("cell-x");
+      if (value === "O") cell.classList.add("cell-o");
+
+      cell.textContent = value;
+    });
+  };
+
+  const handleClick = (e) => {
+    if (!e.target.classList.contains("cell")) return;
+
+    const position = e.target.dataset.id;
+    console.log(position);
+
+    ticTacToe.playRound(position);
+
+    renderBoard();
+  };
+
+  renderBoard();
+
+  boardElement.addEventListener("click", handleClick);
+
+  return { renderBoard };
+})();

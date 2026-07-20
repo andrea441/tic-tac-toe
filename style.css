@@ -1,0 +1,93 @@
+:root {
+  --background-color: #0a041a;
+  --text-color: #e7e1fa;
+  --panel-color: #120b25;
+  --primary-color: #a989ec;
+  --secondary-color: #981863;
+  --accent-color: #dd2c5c;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: "Inter", sans-serif;
+
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background-color: var(--panel-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2em;
+}
+
+header h1 {
+  font-size: 1.5em;
+}
+
+button {
+  background-color: var(--secondary-color);
+  border-radius: 999px;
+  border: none;
+  padding: 0.4em 0.8em;
+  font-size: clamp(0.8rem, 2vw, 1rem);
+  cursor: pointer;
+  font-weight: bold;
+  font-family: inherit;
+
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+button svg {
+  height: 2rem;
+}
+
+main {
+  flex: 1;
+  padding: 3em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.board {
+  background-color: var(--panel-color);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid white;
+  width: clamp(240px, 80vw, 500px);
+}
+
+.cell {
+  border: 2px solid var(--text-color);
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: clamp(1.5rem, 8vw, 4rem);
+}
+
+.cell:hover {
+  background-color: color-mix(in srgb, var(--panel-color) 85%, white);
+}
+
+.cell.cell-x {
+  color: var(--primary-color);
+}
+
+.cell.cell-o {
+  color: var(--accent-color);
+}
