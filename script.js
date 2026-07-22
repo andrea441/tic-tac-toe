@@ -130,16 +130,17 @@ const ticTacToe = (() => {
     const activeName = getActivePlayer().getName();
 
     const validPlay = gameBoard.addPlay(activeMark, position);
-    if (!validPlay) return "Spot taken! Choose another one.";
+
+    if (!validPlay) return { status: "invalid" };
 
     const hasWinner = gameBoard.checkWinner(position);
-    if (hasWinner) return `${activeName} won the game!`;
+    if (hasWinner)
+      return { status: "win", message: `${activeName} won the game!` };
 
-    if (increaseTurn() >= 9) return "It's a tie, nobody won this time.";
+    if (increaseTurn() >= 9)
+      return { status: "tie", message: "It's a tie! Nobody won this time" };
 
     switchTurn();
-
-    return { status: "", message: "" };
   };
 
   return {
@@ -153,10 +154,15 @@ const ticTacToe = (() => {
 
 const displayController = (() => {
   const boardElement = document.querySelector(".board");
-  const restartButton = document.querySelector(".restart-game-btn");
+
+  const restartButtons = document.querySelectorAll(".restart-game-btn");
+
   const openDialogNames = document.querySelector(".change-names-btn");
   const dialogNames = document.querySelector("#modal-change-names");
   const namesForm = document.querySelector("#new-names-form");
+
+  const dialogEndGame = document.querySelector("#modal-win-message");
+  const buttonEndGame = document.querySelector(".accept-win");
 
   const displayActivePlayer = () => {
     const activePlayerElement = document.querySelector(".current-player");
@@ -188,16 +194,34 @@ const displayController = (() => {
   };
 
   const handleClick = (e) => {
+    if (e.currentTarget.classList.contains("game-over")) return;
     if (!e.target.classList.contains("cell")) return;
 
     const position = e.target.dataset.id;
-    const moveMessage = ticTacToe.playRound(position);
+
+    const gameStatus = ticTacToe.playRound(position);
+
+    if (
+      gameStatus &&
+      (gameStatus.status === "win" || gameStatus.status === "tie")
+    ) {
+      messageElement = document.querySelector(".message");
+      messageElement.textContent = gameStatus.message;
+
+      boardElement.classList.add("game-over");
+
+      dialogEndGame.showModal();
+    }
 
     renderBoard();
   };
 
   const handleReset = (e) => {
     ticTacToe.restartGame();
+
+    dialogEndGame.close();
+
+    boardElement.classList.remove("game-over");
 
     renderBoard();
   };
@@ -219,11 +243,17 @@ const displayController = (() => {
 
   boardElement.addEventListener("click", handleClick);
 
-  restartButton.addEventListener("click", handleReset);
+  restartButtons.forEach((button) => {
+    button.addEventListener("click", handleReset);
+  });
 
   openDialogNames.addEventListener("click", () => {
     dialogNames.showModal();
   });
 
   namesForm.addEventListener("submit", handleChangeName);
+
+  buttonEndGame.addEventListener("click", () => {
+    dialogEndGame.close();
+  });
 })();
