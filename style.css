@@ -106,6 +106,40 @@ main {
 dialog {
   margin: auto;
   padding: 2em;
+  background-color: var(--panel-color);
+  color: var(--text-color);
+  font-size: 1.2em;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1em;
+}
+
+form h2 {
+  align-self: flex-start;
+}
+
+.form-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.form-group label {
+  width: 150px;
+}
+
+.form-group input {
+  border-radius: 8px;
+  padding: 0.5em;
+  border: 2px solid gray;
+  flex-grow: 1;
+  font-size: 1rem;
+  outline: none;
 }
 
 dialog::backdrop {
@@ -115,4 +149,5 @@ dialog::backdrop {
 
 dialog button {
   background-color: var(--primary-color);
+  padding: 0.8em 2em;
 }

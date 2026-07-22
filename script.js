@@ -103,6 +103,14 @@ const ticTacToe = (() => {
   let activeTurn = 1;
   let activePlayer = player1;
 
+  changePlayerOneName = (name) => {
+    player1.setName(name);
+  };
+
+  changePlayerTwoName = (name) => {
+    player2.setName(name);
+  };
+
   const restartGame = () => {
     activePlayer = player1;
     activeTurn = 1;
@@ -134,7 +142,13 @@ const ticTacToe = (() => {
     return { status: "", message: "" };
   };
 
-  return { playRound, restartGame, getActivePlayer };
+  return {
+    playRound,
+    restartGame,
+    getActivePlayer,
+    changePlayerOneName,
+    changePlayerTwoName,
+  };
 })();
 
 const displayController = (() => {
@@ -142,6 +156,7 @@ const displayController = (() => {
   const restartButton = document.querySelector(".restart-game-btn");
   const openDialogNames = document.querySelector(".change-names-btn");
   const dialogNames = document.querySelector("#modal-change-names");
+  const namesForm = document.querySelector("#new-names-form");
 
   const displayActivePlayer = () => {
     const activePlayerElement = document.querySelector(".current-player");
@@ -167,9 +182,9 @@ const displayController = (() => {
       if (value === "O") cell.classList.add("cell-o");
 
       cell.textContent = value;
-
-      displayActivePlayer();
     });
+
+    displayActivePlayer();
   };
 
   const handleClick = (e) => {
@@ -187,11 +202,28 @@ const displayController = (() => {
     renderBoard();
   };
 
+  const handleChangeName = (e) => {
+    e.preventDefault();
+
+    const playerOneName = document.getElementById("player-1-name").value.trim();
+    const playerTwoName = document.getElementById("player-2-name").value.trim();
+
+    if (playerOneName) ticTacToe.changePlayerOneName(playerOneName);
+    if (playerTwoName) ticTacToe.changePlayerTwoName(playerTwoName);
+
+    dialogNames.close();
+    renderBoard();
+  };
+
   renderBoard();
 
   boardElement.addEventListener("click", handleClick);
+
   restartButton.addEventListener("click", handleReset);
+
   openDialogNames.addEventListener("click", () => {
     dialogNames.showModal();
   });
+
+  namesForm.addEventListener("submit", handleChangeName);
 })();

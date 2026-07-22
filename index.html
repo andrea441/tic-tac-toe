@@ -35,6 +35,7 @@
         </button>
       </div>
     </header>
+
     <main>
       <span class="current-player"></span>
       <div class="board">
@@ -49,21 +50,24 @@
         <div class="cell" data-id="9"></div>
       </div>
     </main>
+
     <dialog id="modal-change-names">
-      <form action="">
-        <div>
-          <label for="player-1-name">Player 1 Name:</label>
+      <form action="" id="new-names-form">
+        <h2>Change Player Info</h2>
+        <div class="form-group">
+          <label for="player-1-name">Player 1 Name</label>
           <input type="text" name="player-1" id="player-1-name" />
         </div>
-        <div>
-          <label for="player-2-name">Player 2 Name: </label>
+        <div class="form-group">
+          <label for="player-2-name">Player 2 Name</label>
           <input type="text" name="player-2" id="player-2-name" />
         </div>
-        <button type="submit">Accept</button>
+        <button type="submit" id="save-name">Accept</button>
       </form>
     </dialog>
+
     <dialog id="modal-win-message">
-      <span class="message"></span>
+      <span class="message">Game's over!</span>
       <button type="button" id="close-modal">Accept</button>
     </dialog>
   </body>
